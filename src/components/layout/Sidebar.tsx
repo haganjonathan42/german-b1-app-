@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: "/exercises", label: "Exercises", icon: "✏️" },
   { href: "/writing", label: "Writing", icon: "📝" },
   { href: "/speaking", label: "Speaking", icon: "🎤" },
+  { href: "/tools", label: "Tools", icon: "📖" },
   { href: "/resources", label: "Resources", icon: "🔗" },
   { href: "/progress", label: "Progress", icon: "📊" },
 ];
