@@ -1,39 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GRAMMAR_EXERCISES } from "@/data/exercises";
+import { LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import type { Level } from "@/types";
 
-const WEEKS = Array.from(new Set(GRAMMAR_EXERCISES.map((q) => q.week))).sort((a, b) => a - b);
+const LEVELS: Level[] = ["a1", "a2", "b1"];
 
-const WEEK_TOPICS: Record<number, string> = {
-  1: "Present Tense",
-  2: "Modal Verbs",
-  3: "Nominative & Accusative",
-  4: "Perfect Tense (Perfekt)",
-  5: "Negation",
-  9: "Dative Case",
-  10: "Subordinate Clauses",
+const WEEK_TOPICS: Record<string, string> = {
+  // A1
+  "a1-1": "sein, haben, regular present",
+  "a1-2": "W-questions & nominative articles",
+  // A2
+  "a2-1": "Perfekt (past tense)",
+  "a2-2": "Modal Verbs",
+  // B1
+  "b1-1": "Present Tense",
+  "b1-2": "Modal Verbs",
+  "b1-3": "Nominative & Accusative",
+  "b1-4": "Perfect Tense (Perfekt)",
+  "b1-5": "Negation",
+  "b1-9": "Dative Case",
+  "b1-10": "Subordinate Clauses",
 };
 
 export default function GrammarExercisePage() {
+  const [userLevel, setUserLevel] = useState<Level>("a1");
+  const [selectedLevel, setSelectedLevel] = useState<Level>("a1");
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const questions = GRAMMAR_EXERCISES.filter((q) => q.week === selectedWeek);
+  useEffect(() => {
+    async function fetchLevel() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_level")
+          .eq("id", user.id)
+          .single();
+        if (profile?.current_level) {
+          const level = profile.current_level as Level;
+          setUserLevel(level);
+          setSelectedLevel(level);
+        }
+      }
+    }
+    fetchLevel();
+  }, []);
+
+  const levelExercises = GRAMMAR_EXERCISES.filter((q) => q.level === selectedLevel);
+  const weeks = Array.from(new Set(levelExercises.map((q) => q.week))).sort((a, b) => a - b);
+  const questions = levelExercises.filter((q) => q.week === selectedWeek);
+
+  function handleLevelChange(level: Level) {
+    setSelectedLevel(level);
+    const newWeeks = Array.from(new Set(GRAMMAR_EXERCISES.filter((q) => q.level === level).map((q) => q.week))).sort((a, b) => a - b);
+    setSelectedWeek(newWeeks[0] ?? 1);
+    setAnswers({});
+    setSubmitted(false);
+    setSaved(false);
+  }
 
   function handleSelect(questionId: string, answer: string) {
     if (submitted) return;
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   }
 
-  const correctCount = questions.filter(
-    (q) => answers[q.id] === q.correct_answer
-  ).length;
+  const correctCount = questions.filter((q) => answers[q.id] === q.correct_answer).length;
   const score = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
 
   async function handleSubmit() {
@@ -50,7 +90,8 @@ export default function GrammarExercisePage() {
       user_id: user.id,
       assignment_type: "grammar",
       week_number: selectedWeek,
-      phase: selectedWeek <= 8 ? 1 : selectedWeek <= 16 ? 2 : 3,
+      phase: 1,
+      level: selectedLevel,
       score,
     });
 
@@ -64,6 +105,8 @@ export default function GrammarExercisePage() {
     setSaved(false);
   }
 
+  const topicKey = `${selectedLevel}-${selectedWeek}`;
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
@@ -71,11 +114,37 @@ export default function GrammarExercisePage() {
         <p className="text-slate-500 mt-1">Interactive exercises designed by Thomas Becker</p>
       </div>
 
+      {/* Level tabs */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
+        {LEVELS.map((level) => {
+          const lc = LEVEL_COLORS[level];
+          const count = GRAMMAR_EXERCISES.filter((q) => q.level === level).length;
+          return (
+            <button
+              key={level}
+              onClick={() => handleLevelChange(level)}
+              className={cn(
+                "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition relative",
+                selectedLevel === level
+                  ? `${lc.bg} ${lc.text} ${lc.border} border`
+                  : "text-slate-500 hover:bg-slate-50"
+              )}
+            >
+              {level.toUpperCase()}
+              <span className="block text-xs font-normal opacity-70">{count} questions</span>
+              {level === userLevel && (
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Week selector */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 className="font-semibold text-slate-900 mb-4">Select Week</h2>
         <div className="flex flex-wrap gap-2">
-          {WEEKS.map((week) => (
+          {weeks.map((week) => (
             <button
               key={week}
               onClick={() => {
@@ -92,19 +161,20 @@ export default function GrammarExercisePage() {
               )}
             >
               Week {week}
-              {WEEK_TOPICS[week] && (
-                <span className="ml-1.5 text-xs opacity-70">— {WEEK_TOPICS[week]}</span>
+              {WEEK_TOPICS[`${selectedLevel}-${week}`] && (
+                <span className="ml-1.5 text-xs opacity-70">— {WEEK_TOPICS[`${selectedLevel}-${week}`]}</span>
               )}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grammar tip for this week */}
+      {/* Grammar tip */}
       {questions[0] && (
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
           <p className="text-sm font-semibold text-blue-800 mb-1">
-            📐 Thomas Becker — Week {selectedWeek}: {WEEK_TOPICS[selectedWeek]}
+            📐 Thomas Becker — {selectedLevel.toUpperCase()} Week {selectedWeek}
+            {WEEK_TOPICS[topicKey] ? `: ${WEEK_TOPICS[topicKey]}` : ""}
           </p>
           <p className="text-sm text-blue-700">
             Complete all {questions.length} questions below. Check your answers after submitting.
@@ -147,7 +217,6 @@ export default function GrammarExercisePage() {
                 {q.options?.map((option) => {
                   const isSelected = userAnswer === option;
                   const isThisCorrect = submitted && option === q.correct_answer;
-
                   return (
                     <button
                       key={option}
@@ -169,12 +238,7 @@ export default function GrammarExercisePage() {
               </div>
 
               {submitted && (
-                <div
-                  className={cn(
-                    "mt-4 ml-10 p-3 rounded-xl text-sm",
-                    isCorrect ? "bg-green-100 text-green-800" : "bg-amber-50 text-amber-800"
-                  )}
-                >
+                <div className={cn("mt-4 ml-10 p-3 rounded-xl text-sm", isCorrect ? "bg-green-100 text-green-800" : "bg-amber-50 text-amber-800")}>
                   <p className="font-semibold mb-1">
                     {isCorrect ? "✓ Correct!" : `✗ Correct answer: ${q.correct_answer}`}
                   </p>
@@ -186,7 +250,7 @@ export default function GrammarExercisePage() {
         })}
       </div>
 
-      {/* Submit / Results */}
+      {/* Submit */}
       {!submitted && questions.length > 0 && (
         <button
           onClick={handleSubmit}
@@ -197,24 +261,21 @@ export default function GrammarExercisePage() {
         </button>
       )}
 
+      {/* Results */}
       {submitted && (
         <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-          <div
-            className={cn(
-              "text-5xl font-black mb-2",
-              score >= 80 ? "text-green-600" : score >= 70 ? "text-blue-600" : score >= 60 ? "text-yellow-600" : "text-red-600"
-            )}
-          >
+          <div className={cn("text-5xl font-black mb-2",
+            score >= 80 ? "text-green-600" : score >= 70 ? "text-blue-600" : score >= 60 ? "text-yellow-600" : "text-red-600"
+          )}>
             {score}%
           </div>
           <p className="text-xl font-bold text-slate-900 mb-1">
             {score >= 80 ? "Ausgezeichnet! 🌟" : score >= 70 ? "Sehr gut! ✓" : score >= 60 ? "Bestanden ✓" : "Weiter üben 📚"}
           </p>
           <p className="text-slate-500 mb-6">
-            {correctCount} of {questions.length} correct — Week {selectedWeek},{" "}
-            {WEEK_TOPICS[selectedWeek]}
+            {correctCount} of {questions.length} correct — {selectedLevel.toUpperCase()} Week {selectedWeek}
+            {WEEK_TOPICS[topicKey] ? `, ${WEEK_TOPICS[topicKey]}` : ""}
           </p>
-
           <div className="flex justify-center gap-3">
             {!saved && (
               <button
@@ -230,10 +291,7 @@ export default function GrammarExercisePage() {
                 ✓ Saved to progress
               </span>
             )}
-            <button
-              onClick={resetExercise}
-              className="bg-slate-100 text-slate-700 font-semibold px-6 py-3 rounded-xl hover:bg-slate-200 transition"
-            >
+            <button onClick={resetExercise} className="bg-slate-100 text-slate-700 font-semibold px-6 py-3 rounded-xl hover:bg-slate-200 transition">
               Try Again
             </button>
           </div>

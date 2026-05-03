@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { CURRICULUM_PHASES, DAILY_SCHEDULE } from "@/data/curriculum";
+import { CURRICULUM_BY_LEVEL, DAILY_SCHEDULE, LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
+import type { Level } from "@/types";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -24,9 +25,10 @@ export default async function DashboardPage() {
     .select("id")
     .eq("user_id", user!.id);
 
-  const currentPhase = profile?.current_phase ?? 1;
+  const currentLevel: Level = (profile?.current_level as Level) ?? "a1";
   const streak = profile?.study_streak ?? 0;
-  const phaseData = CURRICULUM_PHASES.find((p) => p.id === currentPhase)!;
+  const levelData = CURRICULUM_BY_LEVEL[currentLevel];
+  const firstPhase = levelData.phases[0];
   const totalAssignments = completions?.length ?? 0;
   const totalWriting = writingEntries?.length ?? 0;
   const firstName = (profile?.full_name ?? user?.email ?? "Learner").split(" ")[0];
@@ -35,16 +37,22 @@ export default async function DashboardPage() {
   const hour = today.getHours();
   const greeting = hour < 12 ? "Guten Morgen" : hour < 17 ? "Guten Tag" : "Guten Abend";
 
-  const phaseProgress = Math.min(((currentPhase - 1) / 5) * 100, 100);
+  const levelColors = LEVEL_COLORS[currentLevel];
 
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">
-          {greeting}, {firstName}! 👋
-        </h1>
-        <p className="text-slate-500 mt-1">Ready for today&apos;s German practice?</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">
+            {greeting}, {firstName}! 👋
+          </h1>
+          <p className="text-slate-500 mt-1">Ready for today&apos;s German practice?</p>
+        </div>
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-semibold ${levelColors.bg} ${levelColors.border} ${levelColors.text}`}>
+          <div className={`w-2 h-2 rounded-full ${levelColors.dot}`} />
+          {LEVEL_LABELS[currentLevel]}
+        </div>
       </div>
 
       {/* Stats row */}
@@ -58,9 +66,9 @@ export default async function DashboardPage() {
         />
         <StatCard
           icon="📍"
-          label="Current Phase"
-          value={`Phase ${currentPhase}`}
-          sub={phaseData.subtitle}
+          label="Current Level"
+          value={LEVEL_LABELS[currentLevel].split(" — ")[0]}
+          sub={levelData.title}
           color="blue"
         />
         <StatCard
@@ -108,30 +116,17 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Current phase */}
+          {/* Current level first phase */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full">
-                  {phaseData.months}
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${levelColors.badge}`}>
+                  {levelData.duration}
                 </span>
                 <h2 className="font-bold text-slate-900 text-lg mt-2">
-                  {phaseData.title}: {phaseData.subtitle}
+                  {firstPhase.title}: {firstPhase.subtitle}
                 </h2>
-                <p className="text-slate-500 text-sm mt-1">{phaseData.goal}</p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex justify-between text-xs text-slate-500 mb-1.5">
-                <span>Overall journey progress</span>
-                <span>{Math.round(phaseProgress)}%</span>
-              </div>
-              <div className="h-2 bg-slate-100 rounded-full">
-                <div
-                  className="h-2 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full transition-all duration-500"
-                  style={{ width: `${phaseProgress}%` }}
-                />
+                <p className="text-slate-500 text-sm mt-1">{firstPhase.goal}</p>
               </div>
             </div>
 
@@ -141,7 +136,7 @@ export default async function DashboardPage() {
                   Grammar Focus
                 </p>
                 <ul className="space-y-1">
-                  {phaseData.grammarTopics.slice(0, 3).map((topic) => (
+                  {firstPhase.grammarTopics.slice(0, 3).map((topic) => (
                     <li key={topic} className="flex items-start gap-1.5 text-sm text-slate-600">
                       <span className="text-yellow-500 mt-0.5 shrink-0">•</span>
                       {topic}
@@ -154,7 +149,7 @@ export default async function DashboardPage() {
                   Vocabulary Themes
                 </p>
                 <ul className="space-y-1">
-                  {phaseData.vocabThemes.slice(0, 3).map((theme) => (
+                  {firstPhase.vocabThemes.slice(0, 3).map((theme) => (
                     <li key={theme} className="flex items-start gap-1.5 text-sm text-slate-600">
                       <span className="text-blue-400 mt-0.5 shrink-0">•</span>
                       {theme}
@@ -179,7 +174,7 @@ export default async function DashboardPage() {
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <h3 className="font-bold text-slate-900 mb-4">Quick Start</h3>
             <div className="space-y-2">
-              <QuickLink href="/exercises/grammar" icon="✏️" label="Grammar Exercise" sub="Week 1 — Present Tense" />
+              <QuickLink href="/exercises/grammar" icon="✏️" label="Grammar Exercise" sub={`${LEVEL_LABELS[currentLevel]} exercises`} />
               <QuickLink href="/writing" icon="📝" label="Writing Practice" sub="Write an email or essay" />
               <QuickLink href="/speaking" icon="🎤" label="Speaking Prompt" sub="Mirror method + topics" />
               <QuickLink href="/resources" icon="🔗" label="Browse Resources" sub="Free tools & websites" />
@@ -234,16 +229,9 @@ export default async function DashboardPage() {
 }
 
 function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-  color,
+  icon, label, value, sub, color,
 }: {
-  icon: string;
-  label: string;
-  value: string;
-  sub: string;
+  icon: string; label: string; value: string; sub: string;
   color: "orange" | "blue" | "green" | "purple";
 }) {
   const colors = {
@@ -252,40 +240,22 @@ function StatCard({
     green: "bg-green-50 border-green-100",
     purple: "bg-purple-50 border-purple-100",
   };
-
   return (
     <div className={`rounded-2xl border p-5 ${colors[color]}`}>
       <div className="text-2xl mb-2">{icon}</div>
       <p className="text-2xl font-bold text-slate-900">{value}</p>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-0.5">
-        {label}
-      </p>
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-0.5">{label}</p>
       <p className="text-xs text-slate-400 mt-0.5">{sub}</p>
     </div>
   );
 }
 
-function QuickLink({
-  href,
-  icon,
-  label,
-  sub,
-}: {
-  href: string;
-  icon: string;
-  label: string;
-  sub: string;
-}) {
+function QuickLink({ href, icon, label, sub }: { href: string; icon: string; label: string; sub: string }) {
   return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition group"
-    >
+    <Link href={href} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition group">
       <span className="text-xl">{icon}</span>
       <div>
-        <p className="text-sm font-medium text-slate-700 group-hover:text-yellow-700">
-          {label}
-        </p>
+        <p className="text-sm font-medium text-slate-700 group-hover:text-yellow-700">{label}</p>
         <p className="text-xs text-slate-400">{sub}</p>
       </div>
     </Link>

@@ -10,5 +10,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/login");
   }
 
+  // Fetch profile to check if placement test has been completed
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("placement_completed")
+    .eq("id", user.id)
+    .single();
+
+  // New users who haven't taken placement yet → redirect to placement test
+  if (profile && !profile.placement_completed) {
+    redirect("/placement");
+  }
+
   return <AppShell>{children}</AppShell>;
 }

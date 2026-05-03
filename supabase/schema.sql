@@ -141,5 +141,39 @@ create policy "Users can manage own sessions"
   with check (auth.uid() = user_id);
 
 -- =========================================================
+-- 5. MIGRATION — Multi-level support (A1 / A2 / B1)
+-- Run this block separately if the tables already exist.
+-- =========================================================
+
+-- Add level columns to profiles
+alter table public.profiles
+  add column if not exists current_level text not null default 'a1'
+    check (current_level in ('a1', 'a2', 'b1')),
+  add column if not exists placement_completed boolean not null default false;
+
+-- Add level column to assignment_completions
+alter table public.assignment_completions
+  add column if not exists level text not null default 'b1'
+    check (level in ('a1', 'a2', 'b1'));
+
+-- Add level column to writing_entries
+alter table public.writing_entries
+  add column if not exists level text not null default 'b1'
+    check (level in ('a1', 'a2', 'b1'));
+
+-- Update the new-user trigger to include level fields
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name, current_phase, current_level, placement_completed)
+  values (new.id, new.raw_user_meta_data->>'full_name', 1, 'a1', false);
+  return new;
+end;
+$$;
+
+-- =========================================================
 -- Done! All tables created with Row Level Security enabled.
 -- =========================================================

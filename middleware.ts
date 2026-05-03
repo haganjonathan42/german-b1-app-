@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect logged-in users away from auth pages
+  // Redirect logged-in users away from auth pages (but not /placement — handled by AppLayout)
   if (user && (pathname === "/login" || pathname === "/signup" || pathname === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";

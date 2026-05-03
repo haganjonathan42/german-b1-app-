@@ -1,12 +1,159 @@
 import type { CurriculumPhase } from "@/types";
 
-export const CURRICULUM_PHASES: CurriculumPhase[] = [
+// ── A1 Phases ──────────────────────────────────────────────────────────
+const A1_PHASES: CurriculumPhase[] = [
   {
     id: 1,
     title: "Phase 1",
-    subtitle: "A2 Foundation",
+    subtitle: "First Steps",
+    months: "Weeks 1–4",
+    level: "A1",
+    goal: "Introduce yourself, understand basic greetings, and use the present tense",
+    grammarTopics: [
+      "Alphabet & pronunciation",
+      "Verb sein (to be) — all forms",
+      "Verb haben (to have) — all forms",
+      "Regular present tense (-en verbs)",
+      "Personal pronouns (ich/du/er/sie/wir/ihr/sie/Sie)",
+    ],
+    vocabThemes: [
+      "Greetings & introductions",
+      "Numbers 1–100",
+      "Colors & shapes",
+      "Days & months",
+    ],
+    resources: ["DW Nicos Weg (Episodes 1–10)", "Anki A1 starter deck", "Schubert Verlag A1 exercises"],
+    color: "green",
+  },
+  {
+    id: 2,
+    title: "Phase 2",
+    subtitle: "Building Blocks",
+    months: "Weeks 5–8",
+    level: "A1",
+    goal: "Ask and answer simple questions, understand basic texts",
+    grammarTopics: [
+      "W-questions (Wer/Was/Wo/Wann/Wie/Warum)",
+      "Nominative articles (der/die/das/ein/eine)",
+      "Negation (nicht / kein)",
+      "Plural nouns",
+      "Basic sentence word order (SVO)",
+    ],
+    vocabThemes: [
+      "Family members",
+      "Food & drink",
+      "The home & rooms",
+      "Body parts & health",
+    ],
+    resources: ["DW Nicos Weg (Episodes 11–20)", "Anki A1 deck (continue)", "Easy German (beginner episodes)"],
+    color: "green",
+  },
+];
+
+// ── A2 Phases ──────────────────────────────────────────────────────────
+const A2_PHASES: CurriculumPhase[] = [
+  {
+    id: 1,
+    title: "Phase 1",
+    subtitle: "Past & Action",
+    months: "Weeks 1–4",
+    level: "A2",
+    goal: "Talk about past events and handle everyday transactions",
+    grammarTopics: [
+      "Perfekt with haben (regular verbs)",
+      "Perfekt with haben (irregular verbs)",
+      "Perfekt with sein (movement/state verbs)",
+      "Partizip II formation rules",
+      "Accusative case (den/einen)",
+    ],
+    vocabThemes: [
+      "Daily routine & time",
+      "Shopping & money",
+      "Transport & directions",
+      "Weather & seasons",
+    ],
+    resources: ["DW Nicos Weg (Episodes 21–40)", "Schubert Verlag A2 exercises", "Anki A2 deck"],
+    color: "yellow",
+  },
+  {
+    id: 2,
+    title: "Phase 2",
+    subtitle: "Modals & Movement",
+    months: "Weeks 5–8",
+    level: "A2",
+    goal: "Express ability, obligation, and permission. Use separable verbs naturally",
+    grammarTopics: [
+      "Modal verbs (können/müssen/wollen)",
+      "Modal verbs (dürfen/sollen/mögen/möchten)",
+      "Separable verbs (aufstehen/anrufen/mitnehmen)",
+      "Dative case introduction (dem/der/einem/einer)",
+      "Prepositions with accusative (durch/für/gegen/ohne/um)",
+    ],
+    vocabThemes: [
+      "Work & professions",
+      "Hobbies & free time",
+      "Clothing & appearance",
+      "City & neighbourhood",
+    ],
+    resources: ["Easy German YouTube (A2 episodes)", "Tandem app (start)", "Slow German Podcast"],
+    color: "yellow",
+  },
+  {
+    id: 3,
+    title: "Phase 3",
+    subtitle: "Description & Comparison",
+    months: "Weeks 9–12",
+    level: "A2",
+    goal: "Describe people and places in detail, compare things, and use two-way prepositions",
+    grammarTopics: [
+      "Adjective endings (nominative & accusative)",
+      "Comparatives (größer als)",
+      "Superlatives (am größten)",
+      "Prepositions with dative (mit/zu/bei/von/aus/nach/seit)",
+      "Two-way prepositions (an/auf/in/über/unter/vor/hinter/neben/zwischen)",
+    ],
+    vocabThemes: [
+      "Nature & environment",
+      "Travel & holidays",
+      "Food & restaurants (extended)",
+      "Technology basics",
+    ],
+    resources: ["DW Learn German (Text Exercises)", "Schubert Verlag (prepositions)", "HiNative (first writing)"],
+    color: "yellow",
+  },
+  {
+    id: 4,
+    title: "Phase 4",
+    subtitle: "Connecting Ideas",
+    months: "Weeks 13–16",
+    level: "A2",
+    goal: "Build complex sentences, give instructions, and talk about the past fluently",
+    grammarTopics: [
+      "Imperative (du/ihr/Sie forms)",
+      "Präteritum of sein & haben",
+      "Präteritum of modal verbs",
+      "Subordinate clauses with weil & dass",
+      "Subordinate clauses with wenn & ob",
+    ],
+    vocabThemes: [
+      "Health & the body (extended)",
+      "School & education",
+      "Media & news",
+      "Social life & invitations",
+    ],
+    resources: ["Easy German YouTube", "Tandem app (continue)", "ARD Mediathek (logo! news)"],
+    color: "yellow",
+  },
+];
+
+// ── B1 Phases (existing 5 phases) ─────────────────────────────────────
+const B1_PHASES: CurriculumPhase[] = [
+  {
+    id: 1,
+    title: "Phase 1",
+    subtitle: "A2 → B1 Foundation",
     months: "Months 1–2",
-    level: "A1 → A2",
+    level: "A2 → B1",
     goal: "Survive daily life conversations and master the grammar backbone",
     grammarTopics: [
       "Present tense verb conjugation",
@@ -118,12 +265,52 @@ export const CURRICULUM_PHASES: CurriculumPhase[] = [
   },
 ];
 
+// ── CURRICULUM_BY_LEVEL — primary export ───────────────────────────────
+export const CURRICULUM_BY_LEVEL: Record<
+  "a1" | "a2" | "b1",
+  { title: string; duration: string; description: string; phases: CurriculumPhase[] }
+> = {
+  a1: {
+    title: "A1 — Complete Beginner",
+    duration: "2 months",
+    description: "Start from zero. Master basic greetings, present tense, and everyday vocabulary.",
+    phases: A1_PHASES,
+  },
+  a2: {
+    title: "A2 — Elementary",
+    duration: "4 months",
+    description: "Build on A1. Talk about the past, use modal verbs, and handle everyday situations.",
+    phases: A2_PHASES,
+  },
+  b1: {
+    title: "B1 — Intermediate",
+    duration: "6 months",
+    description: "Reach TELC B1. Master complex grammar, formal writing, and exam techniques.",
+    phases: B1_PHASES,
+  },
+};
+
+// Backwards-compatible alias
+export const CURRICULUM_PHASES: CurriculumPhase[] = B1_PHASES;
+
 export const PHASE_COLORS: Record<number, { bg: string; text: string; border: string; badge: string }> = {
   1: { bg: "bg-green-50", text: "text-green-700", border: "border-green-200", badge: "bg-green-100 text-green-800" },
   2: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200", badge: "bg-yellow-100 text-yellow-800" },
   3: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200", badge: "bg-orange-100 text-orange-800" },
   4: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", badge: "bg-red-100 text-red-800" },
   5: { bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200", badge: "bg-purple-100 text-purple-800" },
+};
+
+export const LEVEL_COLORS: Record<"a1" | "a2" | "b1", { bg: string; text: string; border: string; badge: string; dot: string }> = {
+  a1: { bg: "bg-green-50", text: "text-green-700", border: "border-green-300", badge: "bg-green-100 text-green-800", dot: "bg-green-500" },
+  a2: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-300", badge: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
+  b1: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-300", badge: "bg-blue-100 text-blue-800", dot: "bg-blue-500" },
+};
+
+export const LEVEL_LABELS: Record<"a1" | "a2" | "b1", string> = {
+  a1: "A1 Beginner",
+  a2: "A2 Elementary",
+  b1: "B1 Intermediate",
 };
 
 export const DAILY_SCHEDULE = [

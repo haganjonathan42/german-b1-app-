@@ -1,7 +1,11 @@
+export type Level = "a1" | "a2" | "b1";
+
 export interface Profile {
   id: string;
   full_name: string | null;
   current_phase: number;
+  current_level: Level;
+  placement_completed: boolean;
   study_streak: number;
   last_study_date: string | null;
   created_at: string;
@@ -13,6 +17,7 @@ export interface AssignmentCompletion {
   assignment_type: "grammar" | "writing" | "speaking" | "listening";
   week_number: number;
   phase: number;
+  level: Level;
   completed_at: string;
   score: number | null;
   notes: string | null;
@@ -28,6 +33,7 @@ export interface WritingEntry {
   self_score: number | null;
   phase: number;
   week_number: number;
+  level: Level;
   writing_type: "complaint" | "enquiry" | "opinion" | "informal" | "free";
   created_at: string;
   updated_at: string;
@@ -43,6 +49,7 @@ export interface DailySession {
 
 export interface GrammarQuestion {
   id: string;
+  level: Level;
   question: string;
   type: "multiple_choice" | "fill_blank" | "error_correction";
   options?: string[];
@@ -50,6 +57,15 @@ export interface GrammarQuestion {
   explanation: string;
   week: number;
   topic: string;
+}
+
+export interface PlacementQuestion {
+  id: string;
+  placementLevel: Level;
+  question: string;
+  options: string[];
+  correct_answer: string;
+  explanation: string;
 }
 
 export interface CurriculumPhase {
@@ -70,7 +86,7 @@ export interface Resource {
   description: string;
   url: string;
   type: "course" | "listening" | "vocabulary" | "grammar" | "speaking" | "writing" | "exam";
-  phases: number[];
+  levels: Level[];
   stars: number;
   free: boolean;
 }

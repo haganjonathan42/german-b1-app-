@@ -98,12 +98,12 @@ export default function ResourcesPage() {
                     </div>
                     <p className="text-slate-500 text-sm">{resource.description}</p>
                     <div className="flex gap-2 mt-2 flex-wrap">
-                      {resource.phases.map((p) => (
+                      {resource.levels.map((l) => (
                         <span
-                          key={p}
-                          className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full"
+                          key={l}
+                          className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full uppercase"
                         >
-                          Phase {p}
+                          {l}
                         </span>
                       ))}
                       <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">

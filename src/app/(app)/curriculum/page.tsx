@@ -1,35 +1,80 @@
-import { CURRICULUM_PHASES, PHASE_COLORS } from "@/data/curriculum";
-import Link from "next/link";
+"use client";
+
+import { useState, useEffect } from "react";
+import { CURRICULUM_BY_LEVEL, PHASE_COLORS, LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+import type { Level } from "@/types";
+
+const LEVELS: Level[] = ["a1", "a2", "b1"];
 
 export default function CurriculumPage() {
+  const [selectedLevel, setSelectedLevel] = useState<Level>("a1");
+
+  useEffect(() => {
+    async function fetchLevel() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_level")
+          .eq("id", user.id)
+          .single();
+        if (profile?.current_level) {
+          setSelectedLevel(profile.current_level as Level);
+        }
+      }
+    }
+    fetchLevel();
+  }, []);
+
+  const levelData = CURRICULUM_BY_LEVEL[selectedLevel];
+  const levelColors = LEVEL_COLORS[selectedLevel];
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold text-slate-900">Curriculum</h1>
         <p className="text-slate-500 mt-1">
-          Your 12-month German B1 journey — designed by Dr. Sabine Richter
+          Your structured learning path — designed by Dr. Sabine Richter
         </p>
       </div>
 
-      {/* Overview */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 className="font-bold text-slate-900 mb-4">Your Learning Profile</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="bg-slate-50 rounded-xl p-4">
-            <p className="text-slate-500">Starting level</p>
-            <p className="font-bold text-slate-900 mt-1">A1 ✓ (TELC passed)</p>
+      {/* Level tabs */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
+        {LEVELS.map((level) => {
+          const lc = LEVEL_COLORS[level];
+          return (
+            <button
+              key={level}
+              onClick={() => setSelectedLevel(level)}
+              className={cn(
+                "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition",
+                selectedLevel === level
+                  ? `${lc.bg} ${lc.text} ${lc.border} border`
+                  : "text-slate-500 hover:bg-slate-50"
+              )}
+            >
+              {CURRICULUM_BY_LEVEL[level].title.split(" — ")[0]}
+              <span className="block text-xs font-normal opacity-70">{CURRICULUM_BY_LEVEL[level].duration}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Level overview */}
+      <div className={cn("rounded-2xl border p-6", levelColors.bg, levelColors.border)}>
+        <h2 className={cn("font-bold text-xl mb-1", levelColors.text)}>{levelData.title}</h2>
+        <p className="text-slate-600 text-sm">{levelData.description}</p>
+        <div className="mt-3 flex gap-4 text-sm">
+          <div>
+            <span className="text-slate-500">Duration: </span>
+            <span className="font-semibold text-slate-900">{levelData.duration}</span>
           </div>
-          <div className="bg-slate-50 rounded-xl p-4">
-            <p className="text-slate-500">Target level</p>
-            <p className="font-bold text-slate-900 mt-1">B1 (TELC)</p>
-          </div>
-          <div className="bg-slate-50 rounded-xl p-4">
-            <p className="text-slate-500">Study time</p>
-            <p className="font-bold text-slate-900 mt-1">1 hour / day</p>
-          </div>
-          <div className="bg-slate-50 rounded-xl p-4">
-            <p className="text-slate-500">Exam date</p>
-            <p className="font-bold text-yellow-600 mt-1">May 2027</p>
+          <div>
+            <span className="text-slate-500">Phases: </span>
+            <span className="font-semibold text-slate-900">{levelData.phases.length}</span>
           </div>
         </div>
       </div>
@@ -55,13 +100,15 @@ export default function CurriculumPage() {
 
       {/* Phase timeline */}
       <div className="space-y-4">
-        <h2 className="font-bold text-slate-900 text-xl">12-Month Phase Map</h2>
+        <h2 className="font-bold text-slate-900 text-xl">
+          {selectedLevel.toUpperCase()} Phases ({levelData.phases.length} phases)
+        </h2>
 
-        {CURRICULUM_PHASES.map((phase) => {
-          const colors = PHASE_COLORS[phase.id];
+        {levelData.phases.map((phase, idx) => {
+          const colors = PHASE_COLORS[(idx % 5) + 1];
           return (
             <div
-              key={phase.id}
+              key={`${selectedLevel}-${phase.id}`}
               className={`rounded-2xl border p-6 ${colors.bg} ${colors.border}`}
             >
               <div className="flex items-start justify-between">
@@ -125,33 +172,35 @@ export default function CurriculumPage() {
         })}
       </div>
 
-      {/* Exam readiness */}
-      <div className="bg-slate-900 rounded-2xl p-6 text-white">
-        <h2 className="font-bold text-lg mb-3">When to Book the Exam</h2>
-        <p className="text-slate-400 text-sm mb-4">Book your TELC B1 when all three are true:</p>
-        <div className="space-y-2">
-          {[
-            "Score 60%+ on two consecutive full TELC B1 mock exams",
-            "Write a formal email (100 words) in under 15 minutes",
-            "Speak for 2 minutes on an unfamiliar topic without switching to English",
-          ].map((item) => (
-            <div key={item} className="flex items-start gap-3 text-sm">
-              <span className="text-yellow-400 mt-0.5 shrink-0">✓</span>
-              <span className="text-slate-300">{item}</span>
-            </div>
-          ))}
+      {/* Exam readiness (B1 only) */}
+      {selectedLevel === "b1" && (
+        <div className="bg-slate-900 rounded-2xl p-6 text-white">
+          <h2 className="font-bold text-lg mb-3">When to Book the Exam</h2>
+          <p className="text-slate-400 text-sm mb-4">Book your TELC B1 when all three are true:</p>
+          <div className="space-y-2">
+            {[
+              "Score 60%+ on two consecutive full TELC B1 mock exams",
+              "Write a formal email (100 words) in under 15 minutes",
+              "Speak for 2 minutes on an unfamiliar topic without switching to English",
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-3 text-sm">
+                <span className="text-yellow-400 mt-0.5 shrink-0">✓</span>
+                <span className="text-slate-300">{item}</span>
+              </div>
+            ))}
+          </div>
+          <a
+            href="https://www.telc.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block bg-yellow-400 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm hover:bg-yellow-500 transition"
+          >
+            Find TELC Exam Centre →
+          </a>
         </div>
-        <a
-          href="https://www.telc.net"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 inline-block bg-yellow-400 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm hover:bg-yellow-500 transition"
-        >
-          Find TELC Exam Centre →
-        </a>
-      </div>
+      )}
 
-      {/* Agent team reference */}
+      {/* Expert team */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 className="font-bold text-slate-900 mb-4">Your Expert Team</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -171,10 +220,6 @@ export default function CurriculumPage() {
             </div>
           ))}
         </div>
-        <p className="text-xs text-slate-400 mt-4">
-          Full agent files available in your{" "}
-          <span className="font-medium">German B1 Plan</span> folder on your Desktop.
-        </p>
       </div>
     </div>
   );

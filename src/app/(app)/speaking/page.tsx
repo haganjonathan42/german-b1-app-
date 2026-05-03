@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { SPEAKING_PROMPTS } from "@/data/exercises";
 import { createClient } from "@/lib/supabase/client";
+import { LEVEL_COLORS } from "@/data/curriculum";
 import { cn } from "@/lib/utils";
+import type { Level } from "@/types";
+
+const LEVELS: Level[] = ["a1", "a2", "b1"];
 
 const TELC_TOPICS = [
   { topic: "Arbeit und Beruf", points: ["Your job", "Daily work routine", "Work-life balance"] },
@@ -38,6 +42,8 @@ const PLANNING_PHRASES = [
 
 export default function SpeakingPage() {
   const [activeTab, setActiveTab] = useState<"mirror" | "topics" | "exam">("mirror");
+  const [userLevel, setUserLevel] = useState<Level>("a1");
+  const [selectedLevel, setSelectedLevel] = useState<Level>("a1");
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timerTarget, setTimerTarget] = useState(10 * 60);
@@ -46,7 +52,28 @@ export default function SpeakingPage() {
   const [saved, setSaved] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(0);
 
-  const currentPrompt = SPEAKING_PROMPTS[0];
+  useEffect(() => {
+    async function fetchLevel() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_level")
+          .eq("id", user.id)
+          .single();
+        if (profile?.current_level) {
+          const level = profile.current_level as Level;
+          setUserLevel(level);
+          setSelectedLevel(level);
+        }
+      }
+    }
+    fetchLevel();
+  }, []);
+
+  const levelPrompts = SPEAKING_PROMPTS.filter((p) => p.level === selectedLevel);
+  const currentPrompt = levelPrompts[0] ?? SPEAKING_PROMPTS[0];
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -81,6 +108,7 @@ export default function SpeakingPage() {
       week_number: currentPrompt.week,
       phase: currentPrompt.phase,
       score: null,
+      level: selectedLevel,
     });
     setSaved(true);
     setSaving(false);
@@ -91,6 +119,32 @@ export default function SpeakingPage() {
       <div>
         <h1 className="text-3xl font-bold text-slate-900">Speaking Practice</h1>
         <p className="text-slate-500 mt-1">Build fluency and confidence — coached by Klaus Meyer</p>
+      </div>
+
+      {/* Level tabs */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
+        {LEVELS.map((level) => {
+          const lc = LEVEL_COLORS[level];
+          const count = SPEAKING_PROMPTS.filter((p) => p.level === level).length;
+          return (
+            <button
+              key={level}
+              onClick={() => { setSelectedLevel(level); resetTimer(); }}
+              className={cn(
+                "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition relative",
+                selectedLevel === level
+                  ? `${lc.bg} ${lc.text} ${lc.border} border`
+                  : "text-slate-500 hover:bg-slate-50"
+              )}
+            >
+              {level.toUpperCase()}
+              <span className="block text-xs font-normal opacity-70">{count} prompts</span>
+              {level === userLevel && (
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Klaus quote */}
@@ -192,7 +246,9 @@ export default function SpeakingPage() {
 
           {/* Today's prompts */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
-            <h3 className="font-bold text-slate-900 mb-4">Today&apos;s Mirror Prompts (Week 1)</h3>
+            <h3 className="font-bold text-slate-900 mb-4">
+              {selectedLevel.toUpperCase()} Mirror Prompts — Week {currentPrompt.week}
+            </h3>
             <div className="space-y-3">
               {currentPrompt.prompts.map((prompt, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">

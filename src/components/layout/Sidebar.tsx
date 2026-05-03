@@ -4,7 +4,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { X, PanelLeftClose } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import type { Level } from "@/types";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "🏠" },
@@ -25,6 +28,25 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [currentLevel, setCurrentLevel] = useState<Level>("a1");
+
+  useEffect(() => {
+    async function fetchLevel() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_level")
+          .eq("id", user.id)
+          .single();
+        if (profile?.current_level) {
+          setCurrentLevel(profile.current_level as Level);
+        }
+      }
+    }
+    fetchLevel();
+  }, []);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -32,6 +54,8 @@ export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
     router.push("/login");
     router.refresh();
   }
+
+  const levelColors = LEVEL_COLORS[currentLevel];
 
   return (
     <aside
@@ -50,7 +74,6 @@ export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
               <p className="text-slate-400 text-xs">Learning Hub</p>
             </div>
           </Link>
-          {/* Close on mobile, collapse on desktop */}
           <button
             onClick={onToggle}
             className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition lg:flex hidden"
@@ -66,7 +89,6 @@ export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
             <X size={18} />
           </button>
         </div>
-        {/* German flag stripe */}
         <div className="flex gap-0.5 mt-3">
           <div className="h-0.5 flex-1 bg-slate-900 border border-slate-600" />
           <div className="h-0.5 flex-1 bg-red-600" />
@@ -97,15 +119,20 @@ export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
         })}
       </nav>
 
-      {/* Target info */}
-      <div className="p-4 mx-4 mb-4 bg-slate-800 rounded-xl">
-        <p className="text-xs text-slate-400 mb-1">Target Exam</p>
-        <p className="text-white text-sm font-semibold">TELC B1</p>
-        <p className="text-yellow-400 text-xs">May 2027</p>
-        <div className="mt-2 h-1.5 bg-slate-700 rounded-full">
-          <div className="h-1.5 bg-yellow-400 rounded-full" style={{ width: "8%" }} />
+      {/* Level + Target info */}
+      <div className="p-4 mx-4 mb-4 bg-slate-800 rounded-xl space-y-3">
+        <div>
+          <p className="text-xs text-slate-400 mb-1.5">Current Level</p>
+          <div className="flex items-center gap-2">
+            <div className={cn("w-2.5 h-2.5 rounded-full", levelColors.dot)} />
+            <p className="text-white text-sm font-semibold">{LEVEL_LABELS[currentLevel]}</p>
+          </div>
         </div>
-        <p className="text-slate-500 text-xs mt-1">Month 1 of 12</p>
+        <div className="border-t border-slate-700 pt-3">
+          <p className="text-xs text-slate-400 mb-1">Target Exam</p>
+          <p className="text-white text-sm font-semibold">TELC B1</p>
+          <p className="text-yellow-400 text-xs">May 2027</p>
+        </div>
       </div>
 
       {/* Logout */}

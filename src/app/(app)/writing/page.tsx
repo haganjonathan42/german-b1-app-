@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { WRITING_PROMPTS } from "@/data/exercises";
+import { LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
 import { cn } from "@/lib/utils";
-import type { WritingEntry } from "@/types";
+import type { WritingEntry, Level } from "@/types";
+
+const LEVELS: Level[] = ["a1", "a2", "b1"];
 
 const REGISTER_LABELS: Record<string, string> = {
   formal: "Formal (Sie)",
@@ -22,6 +25,8 @@ const TYPE_LABELS: Record<string, { label: string; color: string }> = {
 
 export default function WritingPage() {
   const [view, setView] = useState<"prompts" | "editor" | "saved">("prompts");
+  const [userLevel, setUserLevel] = useState<Level>("a1");
+  const [selectedLevel, setSelectedLevel] = useState<Level>("a1");
   const [selectedPrompt, setSelectedPrompt] = useState<(typeof WRITING_PROMPTS)[0] | null>(null);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -37,6 +42,26 @@ export default function WritingPage() {
   const [timerLimit] = useState(12 * 60); // 12 minutes
 
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+
+  useEffect(() => {
+    async function fetchLevel() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_level")
+          .eq("id", user.id)
+          .single();
+        if (profile?.current_level) {
+          const level = profile.current_level as Level;
+          setUserLevel(level);
+          setSelectedLevel(level);
+        }
+      }
+    }
+    fetchLevel();
+  }, []);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -79,6 +104,7 @@ export default function WritingPage() {
       phase: selectedPrompt?.phase ?? 1,
       week_number: selectedPrompt?.week ?? 1,
       writing_type: selectedPrompt?.type ?? "free",
+      level: selectedPrompt?.level ?? selectedLevel,
     };
 
     await supabase.from("writing_entries").insert(entry);
@@ -90,6 +116,7 @@ export default function WritingPage() {
       week_number: selectedPrompt?.week ?? 1,
       phase: selectedPrompt?.phase ?? 1,
       score: selfScore,
+      level: selectedPrompt?.level ?? selectedLevel,
     });
 
     setSaveMessage("Saved!");
@@ -139,12 +166,40 @@ export default function WritingPage() {
         </div>
       </div>
 
+      {/* Level tabs */}
+      {view === "prompts" && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
+          {LEVELS.map((level) => {
+            const lc = LEVEL_COLORS[level];
+            const count = WRITING_PROMPTS.filter((p) => p.level === level).length;
+            return (
+              <button
+                key={level}
+                onClick={() => setSelectedLevel(level)}
+                className={cn(
+                  "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition relative",
+                  selectedLevel === level
+                    ? `${lc.bg} ${lc.text} ${lc.border} border`
+                    : "text-slate-500 hover:bg-slate-50"
+                )}
+              >
+                {level.toUpperCase()}
+                <span className="block text-xs font-normal opacity-70">{count} prompts</span>
+                {level === userLevel && (
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* PROMPTS VIEW */}
       {view === "prompts" && (
         <div className="space-y-4">
           <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
             <p className="text-sm font-semibold text-amber-800 mb-1">
-              ✒️ Anna Schulz — Writing Coach
+              ✒️ Anna Schulz — {selectedLevel.toUpperCase()} Writing Coach
             </p>
             <p className="text-sm text-amber-700">
               Choose a prompt below to open the editor. In Phase 3+, use the 12-minute timer.
@@ -152,7 +207,7 @@ export default function WritingPage() {
             </p>
           </div>
 
-          {WRITING_PROMPTS.map((prompt) => {
+          {WRITING_PROMPTS.filter((p) => p.level === selectedLevel).map((prompt) => {
             const typeInfo = TYPE_LABELS[prompt.type];
             return (
               <div
