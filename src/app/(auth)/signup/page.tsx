@@ -12,6 +12,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -40,13 +41,45 @@ export default function SignupPage() {
       return;
     }
 
-    // If email confirmation is disabled in Supabase, user is logged in immediately
-    if (data.session) {
-      router.push("/dashboard");
-      router.refresh();
-    } else {
-      router.push("/login?message=Check your email to confirm your account");
+    // Email confirmation required
+    if (!data.session) {
+      setEmailSent(true);
+      setLoading(false);
+      return;
     }
+
+    // Email confirmation disabled in Supabase — logged in immediately
+    router.push("/dashboard");
+    router.refresh();
+  }
+
+  if (emailSent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <div className="text-5xl mb-4">📬</div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Check your email</h2>
+            <p className="text-slate-600 mb-2">
+              We sent a confirmation link to:
+            </p>
+            <p className="font-semibold text-slate-900 mb-6 bg-slate-100 px-4 py-2 rounded-xl inline-block">
+              {email}
+            </p>
+            <p className="text-slate-500 text-sm mb-6">
+              Click the link in the email to activate your account, then come back to sign in.
+              Check your spam folder if you don&apos;t see it within a minute.
+            </p>
+            <Link
+              href="/login"
+              className="block w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold py-3 px-4 rounded-xl transition text-center"
+            >
+              Go to Sign In
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

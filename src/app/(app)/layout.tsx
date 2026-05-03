@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { AppShell } from "@/components/layout/AppShell";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -10,14 +10,5 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/login");
   }
 
-  return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 ml-64 min-h-screen bg-slate-50">
-        <div className="max-w-5xl mx-auto p-8">
-          {children}
-        </div>
-      </main>
-    </div>
-  );
+  return <AppShell>{children}</AppShell>;
 }

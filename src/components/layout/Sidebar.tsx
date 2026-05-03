@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { X, PanelLeftClose } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,13 @@ const NAV_ITEMS = [
   { href: "/progress", label: "Progress", icon: "📊" },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onToggle: () => void;
+}
+
+export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -27,16 +34,38 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-slate-900 min-h-screen flex flex-col fixed left-0 top-0 z-40">
-      {/* Logo */}
-      <div className="p-6 border-b border-slate-700">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <span className="text-2xl">🇩🇪</span>
-          <div>
-            <p className="font-bold text-white text-sm leading-tight">Deutsch B1</p>
-            <p className="text-slate-400 text-xs">Learning Hub</p>
-          </div>
-        </Link>
+    <aside
+      className={cn(
+        "w-64 bg-slate-900 min-h-screen flex flex-col fixed left-0 top-0 z-40 transition-transform duration-300",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}
+    >
+      {/* Logo + close buttons */}
+      <div className="p-5 border-b border-slate-700">
+        <div className="flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-3 group" onClick={onClose}>
+            <span className="text-2xl">🇩🇪</span>
+            <div>
+              <p className="font-bold text-white text-sm leading-tight">Deutsch B1</p>
+              <p className="text-slate-400 text-xs">Learning Hub</p>
+            </div>
+          </Link>
+          {/* Close on mobile, collapse on desktop */}
+          <button
+            onClick={onToggle}
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition lg:flex hidden"
+            aria-label="Collapse sidebar"
+          >
+            <PanelLeftClose size={16} />
+          </button>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition lg:hidden"
+            aria-label="Close menu"
+          >
+            <X size={18} />
+          </button>
+        </div>
         {/* German flag stripe */}
         <div className="flex gap-0.5 mt-3">
           <div className="h-0.5 flex-1 bg-slate-900 border border-slate-600" />
@@ -53,6 +82,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={cn(
                 "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                 isActive
