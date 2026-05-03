@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Level } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -34,6 +35,21 @@ export function getPhaseMonths(phase: number): string {
   };
   return months[phase] ?? "";
 }
+
+// Returns the set of levels a user can access based on their current level.
+// A1 users see only A1. A2 users see A1+A2 (A1 for revision). B1 sees all.
+export function getAccessibleLevels(userLevel: Level): Level[] {
+  if (userLevel === "a1") return ["a1"];
+  if (userLevel === "a2") return ["a1", "a2"];
+  return ["a1", "a2", "b1"];
+}
+
+// The level that must be completed to unlock a given level.
+export const UNLOCK_REQUIREMENT: Record<Level, string> = {
+  a1: "",
+  a2: "Complete A1 exercises with 80%+ average to unlock",
+  b1: "Complete A2 exercises with 80%+ average to unlock",
+};
 
 export function scoreToGrade(score: number): { label: string; color: string } {
   if (score >= 80) return { label: "Excellent", color: "text-green-600" };

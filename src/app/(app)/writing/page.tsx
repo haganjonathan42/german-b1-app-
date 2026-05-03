@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { WRITING_PROMPTS } from "@/data/exercises";
-import { LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
-import { cn } from "@/lib/utils";
+import { cn, getAccessibleLevels } from "@/lib/utils";
+import { LevelTabs } from "@/components/LevelTabs";
 import type { WritingEntry, Level } from "@/types";
-
-const LEVELS: Level[] = ["a1", "a2", "b1"];
 
 const REGISTER_LABELS: Record<string, string> = {
   formal: "Formal (Sie)",
@@ -168,30 +166,20 @@ export default function WritingPage() {
 
       {/* Level tabs */}
       {view === "prompts" && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
-          {LEVELS.map((level) => {
-            const lc = LEVEL_COLORS[level];
-            const count = WRITING_PROMPTS.filter((p) => p.level === level).length;
-            return (
-              <button
-                key={level}
-                onClick={() => setSelectedLevel(level)}
-                className={cn(
-                  "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition relative",
-                  selectedLevel === level
-                    ? `${lc.bg} ${lc.text} ${lc.border} border`
-                    : "text-slate-500 hover:bg-slate-50"
-                )}
-              >
-                {level.toUpperCase()}
-                <span className="block text-xs font-normal opacity-70">{count} prompts</span>
-                {level === userLevel && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+        <LevelTabs
+          userLevel={userLevel}
+          selectedLevel={selectedLevel}
+          onSelect={(level) => {
+            if (!getAccessibleLevels(userLevel).includes(level)) return;
+            setSelectedLevel(level);
+          }}
+          countByLevel={{
+            a1: WRITING_PROMPTS.filter((p) => p.level === "a1").length,
+            a2: WRITING_PROMPTS.filter((p) => p.level === "a2").length,
+            b1: WRITING_PROMPTS.filter((p) => p.level === "b1").length,
+          }}
+          countLabel="prompts"
+        />
       )}
 
       {/* PROMPTS VIEW */}

@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { GRAMMAR_EXERCISES } from "@/data/exercises";
-import { LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
+import { LEVEL_LABELS } from "@/data/curriculum";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
+import { cn, getAccessibleLevels } from "@/lib/utils";
+import { LevelTabs } from "@/components/LevelTabs";
 import type { Level } from "@/types";
-
-const LEVELS: Level[] = ["a1", "a2", "b1"];
 
 const WEEK_TOPICS: Record<string, string> = {
   // A1
@@ -60,6 +59,7 @@ export default function GrammarExercisePage() {
   const questions = levelExercises.filter((q) => q.week === selectedWeek);
 
   function handleLevelChange(level: Level) {
+    if (!getAccessibleLevels(userLevel).includes(level)) return;
     setSelectedLevel(level);
     const newWeeks = Array.from(new Set(GRAMMAR_EXERCISES.filter((q) => q.level === level).map((q) => q.week))).sort((a, b) => a - b);
     setSelectedWeek(newWeeks[0] ?? 1);
@@ -115,30 +115,17 @@ export default function GrammarExercisePage() {
       </div>
 
       {/* Level tabs */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
-        {LEVELS.map((level) => {
-          const lc = LEVEL_COLORS[level];
-          const count = GRAMMAR_EXERCISES.filter((q) => q.level === level).length;
-          return (
-            <button
-              key={level}
-              onClick={() => handleLevelChange(level)}
-              className={cn(
-                "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition relative",
-                selectedLevel === level
-                  ? `${lc.bg} ${lc.text} ${lc.border} border`
-                  : "text-slate-500 hover:bg-slate-50"
-              )}
-            >
-              {level.toUpperCase()}
-              <span className="block text-xs font-normal opacity-70">{count} questions</span>
-              {level === userLevel && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+      <LevelTabs
+        userLevel={userLevel}
+        selectedLevel={selectedLevel}
+        onSelect={handleLevelChange}
+        countByLevel={{
+          a1: GRAMMAR_EXERCISES.filter((q) => q.level === "a1").length,
+          a2: GRAMMAR_EXERCISES.filter((q) => q.level === "a2").length,
+          b1: GRAMMAR_EXERCISES.filter((q) => q.level === "b1").length,
+        }}
+        countLabel="questions"
+      />
 
       {/* Week selector */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">

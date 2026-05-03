@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { CURRICULUM_BY_LEVEL, PHASE_COLORS, LEVEL_COLORS, LEVEL_LABELS } from "@/data/curriculum";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
+import { cn, getAccessibleLevels } from "@/lib/utils";
+import { LevelTabs } from "@/components/LevelTabs";
 import type { Level } from "@/types";
 
-const LEVELS: Level[] = ["a1", "a2", "b1"];
-
 export default function CurriculumPage() {
+  const [userLevel, setUserLevel] = useState<Level>("a1");
   const [selectedLevel, setSelectedLevel] = useState<Level>("a1");
 
   useEffect(() => {
@@ -22,12 +22,19 @@ export default function CurriculumPage() {
           .eq("id", user.id)
           .single();
         if (profile?.current_level) {
-          setSelectedLevel(profile.current_level as Level);
+          const level = profile.current_level as Level;
+          setUserLevel(level);
+          setSelectedLevel(level);
         }
       }
     }
     fetchLevel();
   }, []);
+
+  function handleLevelSelect(level: Level) {
+    if (!getAccessibleLevels(userLevel).includes(level)) return;
+    setSelectedLevel(level);
+  }
 
   const levelData = CURRICULUM_BY_LEVEL[selectedLevel];
   const levelColors = LEVEL_COLORS[selectedLevel];
@@ -42,26 +49,11 @@ export default function CurriculumPage() {
       </div>
 
       {/* Level tabs */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-2 flex gap-2">
-        {LEVELS.map((level) => {
-          const lc = LEVEL_COLORS[level];
-          return (
-            <button
-              key={level}
-              onClick={() => setSelectedLevel(level)}
-              className={cn(
-                "flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition",
-                selectedLevel === level
-                  ? `${lc.bg} ${lc.text} ${lc.border} border`
-                  : "text-slate-500 hover:bg-slate-50"
-              )}
-            >
-              {CURRICULUM_BY_LEVEL[level].title.split(" — ")[0]}
-              <span className="block text-xs font-normal opacity-70">{CURRICULUM_BY_LEVEL[level].duration}</span>
-            </button>
-          );
-        })}
-      </div>
+      <LevelTabs
+        userLevel={userLevel}
+        selectedLevel={selectedLevel}
+        onSelect={handleLevelSelect}
+      />
 
       {/* Level overview */}
       <div className={cn("rounded-2xl border p-6", levelColors.bg, levelColors.border)}>
