@@ -12,6 +12,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["bin", "bist", "ist", "sind"],
     correct_answer: "bin",
     explanation: "sein (to be): ich bin, du bist, er/sie/es ist, wir sind. With 'ich' always use 'bin'.",
+    hint: "The subject is 'ich' (I). German verbs change their ending to match the subject pronoun. Think about which form of 'sein' belongs to the first person singular.",
   },
   {
     id: "a1-w1-2",
@@ -23,6 +24,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["hat", "habe", "haben", "habt"],
     correct_answer: "hat",
     explanation: "haben (to have): ich habe, du hast, er/sie/es hat, wir haben. With 'er' use 'hat'.",
+    hint: "'Mein Vater' (my father) is one person — he is third person singular, like 'er'. Think about how 'haben' is conjugated for a single person who is not the speaker or the listener.",
   },
   {
     id: "a1-w1-3",
@@ -34,6 +36,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["lernen", "lernst", "lernt", "lerne"],
     correct_answer: "lernen",
     explanation: "Regular verbs: ich lerne, du lernst, er lernt, wir lernen. The wir-form always ends in -en.",
+    hint: "The subject is 'wir' (we) — first person plural. Each pronoun group has its own verb ending in German. Think about what ending the wir-form of a regular verb takes.",
   },
   {
     id: "a1-w1-4",
@@ -45,6 +48,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["trinkt", "trinken", "trinkst", "trinke"],
     correct_answer: "trinkt",
     explanation: "er/sie/es takes the -t ending: er trinkt, sie trinkt, es trinkt.",
+    hint: "The subject is 'er' (he) — third person singular. Think about the specific ending that verbs take when the subject is er, sie, or es.",
   },
   {
     id: "a1-w1-5",
@@ -56,6 +60,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["sind", "ist", "bin", "bist"],
     correct_answer: "sind",
     explanation: "Plural subjects (Maria und Klaus = they) use 'sind'. Wir sind, ihr seid, sie sind.",
+    hint: "Two people together form a plural subject — they are like 'sie' (they). Think about which form of 'sein' is used for plural subjects.",
   },
   // ── A1 Week 2 — W-questions & nominative articles ───────────────────
   {
@@ -68,6 +73,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["Wie", "Was", "Wo", "Wer"],
     correct_answer: "Wie",
     explanation: "'Wie heißen Sie?' = 'What is your name?' Wie = how/what in name questions.",
+    hint: "This question is asking for someone's name. In German, name questions use a W-word meaning 'how'. Think about which W-word you would use to ask about manner or description.",
   },
   {
     id: "a1-w2-2",
@@ -79,6 +85,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["Wo", "Was", "Wie", "Wann"],
     correct_answer: "Wo",
     explanation: "Wo = where. It asks about location or place of residence.",
+    hint: "'Wohnen' means to live or reside somewhere — it's asking about a place. Think about which German W-word asks about location or place.",
   },
   {
     id: "a1-w2-3",
@@ -90,6 +97,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["ein", "eine", "einen", "einem"],
     correct_answer: "ein",
     explanation: "Buch (book) is neuter (das Buch). Indefinite article in nominative: masculine=ein, feminine=eine, neuter=ein.",
+    hint: "The noun 'Buch' is neuter — its definite article is 'das'. Think about what the indefinite article ('a/an') looks like for a neuter noun in the nominative case.",
   },
   {
     id: "a1-w2-4",
@@ -101,6 +109,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["eine", "ein", "einen", "einer"],
     correct_answer: "eine",
     explanation: "Frau (woman) is feminine (die Frau). The indefinite article for feminine nouns in nominative is 'eine'.",
+    hint: "'Frau' is a feminine noun — its definite article is 'die'. Think about how the indefinite article ('a/an') changes for feminine nouns in the nominative case.",
   },
   {
     id: "a1-w2-5",
@@ -112,6 +121,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["Wie", "Was", "Wer", "Wo"],
     correct_answer: "Wie",
     explanation: "'Wie alt' = how old. Wie = how, used to ask about age, name, and manner.",
+    hint: "This question asks about someone's age — in English you'd say 'how old'. Think about which German W-word means 'how' and is used for questions about degree or manner.",
   },
   // ── A2 Week 1 — Perfekt ─────────────────────────────────────────────
   {
@@ -124,6 +134,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["gelesen", "lesen", "gelest", "liest"],
     correct_answer: "gelesen",
     explanation: "Perfekt = haben/sein + Partizip II. lesen is irregular: Partizip II = gelesen. Most verbs use haben.",
+    hint: "The Perfekt tense needs a past participle (Partizip II) at the end of the sentence. 'lesen' is an irregular verb — its Partizip II does not follow the regular ge-...-t pattern. Think about how strong verbs often change their vowel.",
   },
   {
     id: "a2-w1-2",
@@ -135,6 +146,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["bin", "habe", "ist", "hat"],
     correct_answer: "bin",
     explanation: "gehen is a movement verb → Perfekt uses sein: ich bin gegangen, du bist gegangen.",
+    hint: "In the Perfekt tense, the auxiliary is either 'haben' or 'sein'. 'gehen' expresses movement from one place to another. Also consider that the subject is 'ich' — that narrows which auxiliary forms are possible.",
   },
   {
     id: "a2-w1-3",
@@ -146,6 +158,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["gekocht", "kochen", "kochte", "kochst"],
     correct_answer: "gekocht",
     explanation: "Regular Partizip II: ge- + verb stem + -t. kochen → stem 'koch' → gekocht.",
+    hint: "The auxiliary 'haben' is already given. You need the Partizip II of 'kochen', which is a regular verb. Think about the regular pattern: what prefix and what ending does a regular Partizip II take?",
   },
   {
     id: "a2-w1-4",
@@ -157,6 +170,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["ist", "hat", "bin", "habe"],
     correct_answer: "ist",
     explanation: "fahren (to drive/travel) is a movement verb → uses sein: er ist gefahren.",
+    hint: "The Partizip II 'gefahren' is already given. You need the auxiliary. 'fahren' describes movement from one place to another. Think about which auxiliary — 'haben' or 'sein' — movement verbs use, and match it to the subject 'er'.",
   },
   {
     id: "a2-w1-5",
@@ -168,6 +182,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["geschlafen", "schlafen", "schlaft", "schläft"],
     correct_answer: "geschlafen",
     explanation: "schlafen is irregular. Its Partizip II is geschlafen (ge- + irregular stem + -en).",
+    hint: "The auxiliary 'haben' is already in the sentence. You need the Partizip II of 'schlafen'. It's an irregular verb — irregular Partizip II forms often have a vowel change and end in -en rather than -t. Eliminate any options that look like present-tense forms.",
   },
   // ── A2 Week 2 — Modal verbs ─────────────────────────────────────────
   {
@@ -180,6 +195,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["muss", "musst", "müssen", "müsst"],
     correct_answer: "muss",
     explanation: "müssen (must/have to): ich muss, du musst, er/sie muss, wir müssen.",
+    hint: "The subject is 'ich'. The modal verb needed here expresses necessity or obligation — the idea of 'having to' do something. Think about how modal verbs are conjugated: they often lose their umlaut in the singular.",
   },
   {
     id: "a2-w2-2",
@@ -191,6 +207,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["kann", "kannst", "können", "könnt"],
     correct_answer: "kann",
     explanation: "können (can): ich kann, du kannst, er/sie kann. 'Sie' (she) = kann.",
+    hint: "The subject here is 'sie' (she) — third person singular. The modal expresses ability. Think about how 'können' is conjugated and notice that modal verbs often share the same form for ich and er/sie.",
   },
   {
     id: "a2-w2-3",
@@ -202,6 +219,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["parken", "geparkt", "parkst", "parke"],
     correct_answer: "parken",
     explanation: "Modal verbs are always followed by an infinitive at the end of the sentence.",
+    hint: "A modal verb ('darf') is already in the sentence. Think about the rule: what form does the second verb always take when used with a modal, and where in the sentence does it go?",
   },
   {
     id: "a2-w2-4",
@@ -213,6 +231,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["will", "willst", "wollen", "wollt"],
     correct_answer: "will",
     explanation: "wollen (to want to): ich will, du willst, er/sie will, wir wollen.",
+    hint: "The subject is 'er' (he) and the meaning is about wanting or intending to do something. Think about 'wollen' and how it conjugates for the third person singular — modal verbs often share the same form for ich and er/sie.",
   },
   {
     id: "a2-w2-5",
@@ -224,6 +243,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["sollen", "soll", "sollt", "sollst"],
     correct_answer: "sollen",
     explanation: "sollen (should/to be supposed to): ich soll, du sollst, er soll, wir sollen.",
+    hint: "The subject is 'wir' (we) and the meaning is about an obligation or expectation set by others — something you are supposed to do. Think about 'sollen' and which form matches the first person plural.",
   },
   // ── B1 Week 1 — Present Tense review ───────────────────────────────
   {
@@ -236,6 +256,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["lerne", "lernst", "lernt", "lernen"],
     correct_answer: "lerne",
     explanation: "With 'ich' (I), regular verbs take the ending '-e'. So 'lernen' → 'ich lerne'.",
+    hint: "The subject is 'ich' (I). In German, every pronoun takes a different verb ending. Think about what ending a regular verb takes when the subject is the first person singular.",
   },
   {
     id: "w1-2",
@@ -247,6 +268,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["wohne", "wohnst", "wohnt", "wohnen"],
     correct_answer: "wohnst",
     explanation: "With 'du' (you, informal), regular verbs take the ending '-st'. So 'wohnen' → 'du wohnst'.",
+    hint: "The subject is 'du' (you, informal). Think about what ending a regular verb takes for the second person singular — it's a distinctive sound in German.",
   },
   {
     id: "w1-3",
@@ -258,6 +280,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["bin", "bist", "ist", "sind"],
     correct_answer: "ist",
     explanation: "'sein' is irregular. er/sie/es = 'ist'. (ich bin, du bist, er/sie/es ist, wir sind, ihr seid, sie sind)",
+    hint: "'sein' is an irregular verb with unique forms. The subject is 'er' (he) — third person singular. Go through the conjugation of 'sein' mentally and find which form belongs to er/sie/es.",
   },
   {
     id: "w1-4",
@@ -269,6 +292,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["haben", "habe", "hat", "habt"],
     correct_answer: "haben",
     explanation: "'haben' with 'wir' = 'haben'. (ich habe, du hast, er hat, wir haben, ihr habt, sie haben)",
+    hint: "The subject is 'wir' (we) — first person plural. Think about the full conjugation of 'haben' and identify which form matches 'wir'. Interestingly, this form looks identical to the infinitive.",
   },
   {
     id: "w1-5",
@@ -280,6 +304,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["spielen → spiele", "Ich → Er", "Fußball → Fussball", "No error"],
     correct_answer: "spielen → spiele",
     explanation: "With 'ich', the verb ending is '-e'. 'spielen' → 'ich spiele'. The infinitive form 'spielen' is incorrect here.",
+    hint: "Look carefully at the verb. The subject 'ich' requires a specific personal ending. The form currently used is the infinitive — is that the right form to use with 'ich' in a regular sentence?",
   },
   // ── B1 Week 2 — Modal Verbs ─────────────────────────────────────────
   {
@@ -297,6 +322,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Ich kann Deutsch sprechen.",
     explanation: "Modal verbs go in position 2 (second place in the sentence), and the main verb (infinitive) goes to the END.",
+    hint: "In a German sentence with a modal verb, two verbs are used. Think about the rule for word order: where does the modal verb sit, and where does the second (main) verb go? Check each option carefully for this pattern.",
   },
   {
     id: "w2-2",
@@ -313,6 +339,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Ich muss das Formular ausfüllen.",
     explanation: "'müssen' = must / have to. 'wollen' = want to. 'können' = can. 'dürfen' = may/be allowed to.",
+    hint: "The English phrase 'have to' expresses obligation — something you are required to do. Think carefully about the meaning of each modal verb option and which one conveys necessity rather than ability, desire, or permission.",
   },
   {
     id: "w2-3",
@@ -324,6 +351,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["Können", "Wollen", "Müssen", "Sollen"],
     correct_answer: "Können",
     explanation: "'Können Sie…?' = 'Can/Could you…?' — the most common polite request form.",
+    hint: "This is a polite request asking someone to help you. Think about which modal verb in German is commonly used for polite requests — the same one used in English when you say 'Could you…?' rather than 'Do you want to…?' or 'Must you…?'.",
   },
   // ── B1 Week 3 — Cases ───────────────────────────────────────────────
   {
@@ -336,6 +364,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["der", "den", "dem", "die"],
     correct_answer: "den",
     explanation: "'Tisch' is the direct object → Accusative case. Masculine Accusative: der → den.",
+    hint: "Ask yourself: is 'Tisch' the one doing the buying, or the thing being bought? The direct object of a verb takes the accusative case. Think about how the masculine definite article changes in the accusative.",
   },
   {
     id: "w3-2",
@@ -347,6 +376,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["Den", "Dem", "Der", "Die"],
     correct_answer: "Der",
     explanation: "'Mann' is the subject → Nominative case. Masculine Nominative = 'der'.",
+    hint: "Ask yourself: is 'Mann' performing the action (buying) or receiving it? The subject of a sentence takes the nominative case. Think about the nominative definite article for masculine nouns.",
   },
   {
     id: "w3-3",
@@ -363,6 +393,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Er liebt die Musik.",
     explanation: "'Musik' is feminine. Feminine Accusative = 'die' (same as Nominative — only masculine changes: der→den).",
+    hint: "'Musik' is a feminine noun (die Musik) and it is the direct object here. Think about how the feminine article changes — or doesn't change — in the accusative case compared to masculine nouns. Also check that the word order follows the standard subject-verb-object pattern.",
   },
   // ── B1 Week 4 — Perfekt ─────────────────────────────────────────────
   {
@@ -380,6 +411,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Gestern ist sie nach Berlin gefahren.",
     explanation: "'fahren' uses 'sein' as auxiliary (movement verb). Past participle: 'gefahren'.",
+    hint: "Two things to check: the auxiliary verb (haben or sein?) and the past participle. 'fahren' expresses travelling — movement to a new location. Think about which auxiliary movement verbs use, and whether the participle form looks right (it should start with ge-).",
   },
   {
     id: "w4-2",
@@ -391,6 +423,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["habe / gelernt", "bin / gelernt", "habe / gelern", "bin / lernen"],
     correct_answer: "habe / gelernt",
     explanation: "'lernen' uses 'haben'. Past participle: ge- + lern + -t = 'gelernt'.",
+    hint: "Two blanks: auxiliary and past participle. 'lernen' is a regular verb and does not describe movement. Think about (1) which auxiliary most regular, non-movement verbs use, and (2) the regular formula for forming the Partizip II: prefix + stem + ending.",
   },
   {
     id: "w4-3",
@@ -402,6 +435,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["hat gegessen", "hat geessen", "ist gegessen", "hat geesst"],
     correct_answer: "hat gegessen",
     explanation: "'essen' is irregular: past participle = 'gegessen'. It uses 'haben'.",
+    hint: "Think about two things: does eating imply movement or change of place? That tells you the auxiliary. For the participle, 'essen' is irregular — its vowel changes in the Partizip II, and it takes the -en ending typical of strong verbs.",
   },
   // ── B1 Week 5 — Negation ────────────────────────────────────────────
   {
@@ -419,6 +453,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Ich habe kein Auto.",
     explanation: "Use 'kein/keine' to negate nouns with an indefinite article (ein/eine) or no article.",
+    hint: "The noun 'Auto' has an indefinite article (ein). In German, there are two negation words: 'nicht' and 'kein'. Think about which one is used specifically to negate nouns that have an indefinite article — it works like 'not a' in English.",
   },
   {
     id: "w5-2",
@@ -435,6 +470,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Er kommt heute nicht.",
     explanation: "Use 'nicht' to negate verbs and adverbs. 'nicht' goes near the end of the clause.",
+    hint: "You need 'nicht' to negate this verb phrase. Think about where 'nicht' is typically placed in a simple German sentence — it generally moves toward the end. Also consider: 'heute' is a time adverb, not a noun, so 'kein' is not appropriate here.",
   },
   // ── B1 Week 9 — Dative ──────────────────────────────────────────────
   {
@@ -447,6 +483,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["mit dem", "mit der", "mit den", "mit die"],
     correct_answer: "mit dem",
     explanation: "'mit' always takes Dative. Masculine Dative = 'dem'. So: mit dem Bus.",
+    hint: "The preposition 'mit' always governs a specific case in German. Think about which case 'mit' requires, then apply the correct masculine article form for that case.",
   },
   {
     id: "w9-2",
@@ -458,6 +495,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["mich", "mir", "ich", "mein"],
     correct_answer: "mir",
     explanation: "'gehören' takes Dative. 'mir' = Dative of 'ich'. (ich→mir, du→dir, er→ihm, wir→uns)",
+    hint: "'gehören' (to belong) asks 'to whom' — that means it needs a dative object. Think about the personal pronoun for 'me' in the dative case. Remember that 'ich' is only used as a subject; in other cases it changes form.",
   },
   // ── B1 Week 10 — Subordinate Clauses ───────────────────────────────
   {
@@ -475,6 +513,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     ],
     correct_answer: "Ich lerne Deutsch, weil ich in Deutschland wohne.",
     explanation: "In subordinate clauses (after weil, dass, wenn, etc.), the verb goes to the END.",
+    hint: "'weil' (because) is a subordinating conjunction. Word order in subordinate clauses is different from main clauses — the conjugated verb moves to a special position. Look at each option and check where the verb lands after 'weil'.",
   },
   {
     id: "w10-2",
@@ -486,6 +525,7 @@ export const GRAMMAR_EXERCISES: GrammarQuestion[] = [
     options: ["dass / ist", "weil / ist", "dass / ist es", "ob / ist"],
     correct_answer: "dass / ist",
     explanation: "'dass' introduces a subordinate clause. The verb 'ist' goes to the end.",
+    hint: "For the first blank: 'Ich denke...' means 'I think...' — in German, this kind of reported thought uses a specific conjunction meaning 'that'. For the second blank: remember where the verb goes in a subordinate clause.",
   },
 ];
 

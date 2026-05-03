@@ -237,12 +237,22 @@ export default function GrammarExercisePage() {
                 })}
               </div>
 
-              {submitted && (
-                <div className={cn("mt-4 ml-10 p-3 rounded-xl text-sm", isCorrect ? "bg-green-100 text-green-800" : "bg-amber-50 text-amber-800")}>
-                  <p className="font-semibold mb-1">
-                    {isCorrect ? "✓ Correct!" : `✗ Correct answer: ${q.correct_answer}`}
-                  </p>
+              {submitted && isCorrect && (
+                <div className="mt-4 ml-10 p-3 rounded-xl text-sm bg-green-100 text-green-800">
+                  <p className="font-semibold mb-1">✓ Correct!</p>
                   <p>{q.explanation}</p>
+                </div>
+              )}
+              {submitted && isWrong && (
+                <div className="mt-4 ml-10 p-3 rounded-xl text-sm bg-amber-50 text-amber-800">
+                  <p className="font-semibold mb-1">✗ Not quite — here&apos;s a hint:</p>
+                  <p>{q.hint}</p>
+                </div>
+              )}
+              {submitted && !userAnswer && (
+                <div className="mt-4 ml-10 p-3 rounded-xl text-sm bg-orange-50 text-orange-800">
+                  <p className="font-semibold mb-1">⚠ Not answered</p>
+                  <p>{q.hint}</p>
                 </div>
               )}
             </div>

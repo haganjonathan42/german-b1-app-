@@ -55,6 +55,7 @@ export interface GrammarQuestion {
   options?: string[];
   correct_answer: string;
   explanation: string;
+  hint: string;
   week: number;
   topic: string;
 }
