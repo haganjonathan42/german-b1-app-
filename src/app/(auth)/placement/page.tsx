@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { PLACEMENT_QUESTIONS, scorePlacement } from "@/data/placement";
@@ -36,6 +36,27 @@ export default function PlacementPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<{ score: number; level: Level } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Guard: if already placed, redirect to dashboard
+  useEffect(() => {
+    async function checkPlacement() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.replace("/login"); return; }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("placement_completed")
+        .eq("id", user.id)
+        .single();
+      if (profile?.placement_completed) {
+        router.replace("/dashboard");
+        return;
+      }
+      setChecking(false);
+    }
+    checkPlacement();
+  }, [router]);
 
   function handleSelect(questionId: string, answer: string) {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -44,8 +65,8 @@ export default function PlacementPage() {
   async function handleSubmit() {
     const placement = scorePlacement(answers);
     setResult(placement);
-    setScreen("result");
     await saveLevel(placement.level);
+    setScreen("result");
   }
 
   async function handleSkip() {
@@ -74,11 +95,19 @@ export default function PlacementPage() {
 
   const allAnswered = Object.keys(answers).length === PLACEMENT_QUESTIONS.length;
 
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-slate-400 text-sm">Loading...</div>
+      </div>
+    );
+  }
+
   // ── Intro Screen ───────────────────────────────────────────────────
   if (screen === "intro") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <span className="text-5xl">🇩🇪</span>
             <h1 className="text-3xl font-bold text-white mt-4 mb-2">Welcome to Deutsch B1</h1>
@@ -90,50 +119,23 @@ export default function PlacementPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-2">Placement Test</h2>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Answer 20 quick grammar questions and we&apos;ll place you at the right level —
-                A1, A2, or B1. It takes about 5 minutes.
-              </p>
-            </div>
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <p className="text-slate-600 text-sm leading-relaxed mb-8 text-center">
+              Answer 20 quick questions and we&apos;ll place you at the right level —
+              A1, A2, or B1. Takes about 5 minutes. You only do this once.
+            </p>
 
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
-                <span className="text-2xl">🌱</span>
-                <div>
-                  <p className="font-semibold text-slate-900 text-sm">A1 — Complete Beginner</p>
-                  <p className="text-slate-500 text-xs">Start from zero — alphabet to basic sentences</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
-                <span className="text-2xl">🌿</span>
-                <div>
-                  <p className="font-semibold text-slate-900 text-sm">A2 — Elementary</p>
-                  <p className="text-slate-500 text-xs">You know some basics — expand to everyday fluency</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                <span className="text-2xl">🌳</span>
-                <div>
-                  <p className="font-semibold text-slate-900 text-sm">B1 — Intermediate</p>
-                  <p className="text-slate-500 text-xs">Solid foundation — prepare for TELC B1 exam</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-2">
               <button
                 onClick={() => setScreen("test")}
-                className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3.5 rounded-xl transition"
+                className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-4 rounded-xl transition text-base"
               >
-                Take the Placement Test (5 min)
+                Take the Placement Test
               </button>
               <button
                 onClick={handleSkip}
                 disabled={saving}
-                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3 rounded-xl transition text-sm disabled:opacity-50"
+                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3.5 rounded-xl transition text-sm disabled:opacity-50"
               >
                 Skip — Start at A1 (Complete Beginner)
               </button>
@@ -149,7 +151,7 @@ export default function PlacementPage() {
     const info = LEVEL_INFO[result.level];
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
             <div className="text-6xl mb-4">{info.emoji}</div>
             <p className="text-slate-500 text-sm mb-1">Your placement result</p>
@@ -161,7 +163,7 @@ export default function PlacementPage() {
             </div>
             <button
               onClick={handleStartLearning}
-              className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3.5 rounded-xl transition"
+              className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-4 rounded-xl transition"
             >
               Start Learning →
             </button>
