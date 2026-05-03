@@ -213,9 +213,9 @@ export default function GrammarExercisePage() {
                         "text-left px-4 py-3 rounded-xl border text-sm transition",
                         !submitted && !isSelected && "border-slate-200 hover:border-yellow-300 hover:bg-yellow-50",
                         !submitted && isSelected && "border-yellow-400 bg-yellow-50",
-                        submitted && isThisCorrect && "border-green-400 bg-green-100 text-green-800 font-medium",
+                        submitted && isCorrect && isThisCorrect && "border-green-400 bg-green-100 text-green-800 font-medium",
                         submitted && isSelected && !isThisCorrect && "border-red-300 bg-red-100 text-red-800",
-                        submitted && !isSelected && !isThisCorrect && "border-slate-100 text-slate-400"
+                        submitted && !isSelected && (!isCorrect || !isThisCorrect) && "border-slate-100 text-slate-400"
                       )}
                     >
                       {option}
